@@ -1,8 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { BarChart3 } from 'lucide-react';
+import { AppModeSelector } from './components/AppModeSelector';
 import { TimerDisplay } from './components/TimerDisplay';
 import { ModeSelector } from './components/ModeSelector';
 import { TimerControls } from './components/TimerControls';
+import { Stopwatch } from './components/Stopwatch';
+import { CustomTimer } from './components/CustomTimer';
+import { CountdownTimer } from './components/CountdownTimer';
 import { SettingsPanel } from './components/SettingsPanel';
 import { StatisticsPanel } from './components/StatisticsPanel';
 import { FullscreenButton } from './components/FullscreenButton';
@@ -15,10 +19,11 @@ import { loadSettings, saveSettings, loadStatistics, saveStatistics } from './ut
 import { requestNotificationPermission } from './utils/helpers';
 import { analytics } from './utils/analytics';
 import { THEMES, BACKGROUND_IMAGES } from './utils/constants';
-import type { TimerMode, Statistics } from './types';
+import type { AppMode, TimerMode, Statistics } from './types';
 import './App.css';
 
 function App() {
+  const [appMode, setAppMode] = useState<AppMode>('pomodoro');
   const [settings, setSettings] = useState(() => loadSettings());
   const [statistics, setStatistics] = useState(() => loadStatistics());
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -167,7 +172,7 @@ function App() {
         )}
 
         <header className="app-header">
-          <h1 className="app-title">POMODORO-33</h1>
+          <h1 className="app-title">TIMER-PRO</h1>
           <div className="header-actions">
             <button
               className="stats-button"
@@ -182,26 +187,50 @@ function App() {
         </header>
 
         <main className="app-main">
-          <ModeSelector
-            currentMode={timer.mode}
-            onModeChange={handleModeChange}
-            disabled={timer.status === 'running'}
-          />
+          <AppModeSelector currentMode={appMode} onModeChange={setAppMode} />
 
-          <TimerDisplay secondsLeft={timer.secondsLeft} isRunning={timer.status === 'running'} />
+          {appMode === 'pomodoro' && (
+            <>
+              <ModeSelector
+                currentMode={timer.mode}
+                onModeChange={handleModeChange}
+                disabled={timer.status === 'running'}
+              />
 
-          <TimerControls
-            status={timer.status}
-            onToggle={timer.toggle}
-            onReset={timer.reset}
-            onSkip={timer.skip}
-            onSettings={() => setIsSettingsOpen(true)}
-          />
+              <TimerDisplay secondsLeft={timer.secondsLeft} isRunning={timer.status === 'running'} />
 
-          {timer.mode === 'pomodoro' && (
-            <div className="session-counter">
-              Session {timer.completedPomodoros + 1}
-            </div>
+              <TimerControls
+                status={timer.status}
+                onToggle={timer.toggle}
+                onReset={timer.reset}
+                onSkip={timer.skip}
+                onSettings={() => setIsSettingsOpen(true)}
+              />
+
+              {timer.mode === 'pomodoro' && (
+                <div className="session-counter">
+                  Session {timer.completedPomodoros + 1}
+                </div>
+              )}
+            </>
+          )}
+
+          {appMode === 'stopwatch' && <Stopwatch />}
+
+          {appMode === 'timer' && (
+            <CustomTimer
+              soundEnabled={settings.soundEnabled}
+              notificationsEnabled={settings.notificationsEnabled}
+              volume={settings.volume}
+            />
+          )}
+
+          {appMode === 'countdown' && (
+            <CountdownTimer
+              soundEnabled={settings.soundEnabled}
+              notificationsEnabled={settings.notificationsEnabled}
+              volume={settings.volume}
+            />
           )}
         </main>
 

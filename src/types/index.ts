@@ -1,3 +1,7 @@
+// App modes
+export type AppMode = 'pomodoro' | 'stopwatch' | 'timer' | 'countdown';
+
+// Timer modes (for Pomodoro)
 export type TimerMode = 'pomodoro' | 'shortBreak' | 'longBreak';
 
 export type TimerStatus = 'idle' | 'running' | 'paused';
@@ -12,6 +16,34 @@ export interface TimerSettings {
   soundEnabled: boolean;
   notificationsEnabled: boolean;
   volume: number; // 0-1
+}
+
+// Stopwatch lap interface
+export interface Lap {
+  id: string;
+  lapNumber: number;
+  lapTime: number;
+  totalTime: number;
+  timestamp: number;
+}
+
+// Timer preset interface
+export interface TimerPreset {
+  id: string;
+  name: string;
+  duration: number; // in seconds
+  category: 'work' | 'break' | 'exercise' | 'custom';
+}
+
+// Timer history interface
+export interface TimerHistoryEntry {
+  id: string;
+  mode: AppMode;
+  timerMode?: TimerMode; // for pomodoro
+  duration: number; // in seconds
+  completed: boolean;
+  timestamp: number;
+  label?: string;
 }
 
 export interface Theme {
