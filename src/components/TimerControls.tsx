@@ -17,22 +17,42 @@ export const TimerControls = ({
   onSettings,
 }: TimerControlsProps) => {
   return (
-    <div className="timer-controls">
-      <button className="control-button start-button" onClick={onToggle} title="Start/Pause (Space)">
-        {status === 'running' ? <Pause size={24} /> : <Play size={24} />}
+    <div className="timer-controls" role="group" aria-label="Timer controls">
+      <button
+        className="control-button start-button"
+        onClick={onToggle}
+        title="Start/Pause (Space)"
+        aria-label={status === 'running' ? 'Pause timer' : 'Start timer'}
+      >
+        {status === 'running' ? <Pause size={24} aria-hidden="true" /> : <Play size={24} aria-hidden="true" />}
         <span>{status === 'running' ? 'Pause' : 'Start'}</span>
       </button>
 
-      <button className="control-button icon-button" onClick={onReset} title="Reset (R)">
-        <RotateCcw size={24} />
+      <button
+        className="control-button icon-button"
+        onClick={onReset}
+        title="Reset (R)"
+        aria-label="Reset timer"
+      >
+        <RotateCcw size={24} aria-hidden="true" />
       </button>
 
-      <button className="control-button icon-button" onClick={onSkip} title="Skip (S)">
-        <SkipForward size={24} />
+      <button
+        className="control-button icon-button"
+        onClick={onSkip}
+        title="Skip (S)"
+        aria-label="Skip to next session"
+      >
+        <SkipForward size={24} aria-hidden="true" />
       </button>
 
-      <button className="control-button icon-button settings-button" onClick={onSettings} title="Settings (C)">
-        <Settings size={24} />
+      <button
+        className="control-button icon-button settings-button"
+        onClick={onSettings}
+        title="Settings (C)"
+        aria-label="Open settings"
+      >
+        <Settings size={24} aria-hidden="true" />
       </button>
     </div>
   );

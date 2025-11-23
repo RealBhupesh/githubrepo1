@@ -2,12 +2,62 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Advanced Pomodoro timer with customizable themes, backgrounds, and productivity tracking" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+
+    <!-- Viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- Primary Meta Tags -->
     <title>Focus Timer - Advanced Pomodoro Timer</title>
+    <meta name="title" content="Focus Timer - Advanced Pomodoro Timer" />
+    <meta name="description" content="Boost your productivity with our advanced Pomodoro timer. Features customizable themes, beautiful backgrounds, comprehensive statistics, and browser notifications. Free, no signup required." />
+    <meta name="keywords" content="pomodoro, timer, productivity, focus, time management, work timer, break timer, task timer" />
+    <meta name="author" content="Focus Timer" />
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#667eea" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://yourdomain.com/" />
+    <meta property="og:title" content="Focus Timer - Advanced Pomodoro Timer" />
+    <meta property="og:description" content="Boost your productivity with our advanced Pomodoro timer. Features customizable themes, beautiful backgrounds, and comprehensive statistics." />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=1200&h=630&fit=crop" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://yourdomain.com/" />
+    <meta property="twitter:title" content="Focus Timer - Advanced Pomodoro Timer" />
+    <meta property="twitter:description" content="Boost your productivity with our advanced Pomodoro timer. Features customizable themes, beautiful backgrounds, and comprehensive statistics." />
+    <meta property="twitter:image" content="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=1200&h=630&fit=crop" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://images.unsplash.com" />
+
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- Robots -->
+    <meta name="robots" content="index, follow" />
   </head>
   <body>
+    <noscript>
+      <div style="padding: 2rem; text-align: center; font-family: system-ui, -apple-system, sans-serif;">
+        <h1>JavaScript Required</h1>
+        <p>Please enable JavaScript in your browser to use Focus Timer.</p>
+      </div>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
