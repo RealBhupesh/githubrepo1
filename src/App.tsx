@@ -149,7 +149,15 @@ function App() {
 
   return (
     <div className="app" style={backgroundStyle}>
-      <div className="app-overlay" style={{ '--theme-color': selectedTheme.primary } as React.CSSProperties}>
+      <div
+        className="app-overlay"
+        style={{
+          '--theme-color': selectedTheme.primary,
+          '--theme-bg': selectedTheme.background,
+          '--theme-text': selectedTheme.text,
+          '--theme-accent': selectedTheme.accent,
+        } as React.CSSProperties}
+      >
         <ToastContainer toasts={toasts} onClose={closeToast} />
 
         {showEscHint && (
@@ -159,7 +167,7 @@ function App() {
         )}
 
         <header className="app-header">
-          <h1 className="app-title">Focus Timer</h1>
+          <h1 className="app-title">POMODORO-33</h1>
           <div className="header-actions">
             <button
               className="stats-button"

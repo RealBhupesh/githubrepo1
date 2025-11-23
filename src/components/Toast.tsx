@@ -42,19 +42,37 @@ const Toast = ({ toast, onClose }: ToastProps) => {
     }
   };
 
-  const getColor = () => {
+  const getStyles = () => {
     switch (toast.type) {
       case 'success':
-        return '#10b981';
+        return {
+          bg: '#00FF00',
+          border: '#000000',
+          text: '#000000',
+        };
       case 'error':
-        return '#ef4444';
+        return {
+          bg: '#FF0000',
+          border: '#000000',
+          text: '#FFFFFF',
+        };
       case 'warning':
-        return '#f59e0b';
+        return {
+          bg: '#FFFF00',
+          border: '#000000',
+          text: '#000000',
+        };
       case 'info':
       default:
-        return '#3b82f6';
+        return {
+          bg: '#FF6600',
+          border: '#000000',
+          text: '#FFFFFF',
+        };
     }
   };
+
+  const styles = getStyles();
 
   return (
     <div
@@ -64,25 +82,29 @@ const Toast = ({ toast, onClose }: ToastProps) => {
         alignItems: 'center',
         gap: '0.75rem',
         padding: '1rem 1.25rem',
-        background: 'white',
-        borderRadius: '12px',
-        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
-        borderLeft: `4px solid ${getColor()}`,
+        background: styles.bg,
+        border: `4px solid ${styles.border}`,
+        color: styles.text,
+        boxShadow: '4px 4px 0 #000000',
         minWidth: '300px',
         maxWidth: '500px',
         marginBottom: '1rem',
+        fontFamily: '"Courier New", "Courier", monospace',
+        fontWeight: 700,
+        textTransform: 'uppercase',
+        fontSize: '0.875rem',
+        letterSpacing: '0.05em',
       }}
     >
-      <div style={{ color: getColor(), display: 'flex', alignItems: 'center' }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
         {getIcon()}
       </div>
       <p
         style={{
           flex: 1,
           margin: 0,
-          color: '#333',
-          fontSize: '0.95rem',
-          lineHeight: '1.5',
+          color: styles.text,
+          lineHeight: '1.4',
         }}
       >
         {toast.message}
@@ -90,27 +112,26 @@ const Toast = ({ toast, onClose }: ToastProps) => {
       <button
         onClick={() => onClose(toast.id)}
         style={{
-          background: 'none',
-          border: 'none',
-          color: '#666',
+          background: styles.text,
+          border: `2px solid ${styles.border}`,
+          color: styles.bg,
           cursor: 'pointer',
           padding: '0.25rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: '4px',
-          transition: 'all 0.2s ease',
+          transition: 'all 0.1s ease',
+          fontWeight: 700,
         }}
         onMouseOver={(e) => {
-          e.currentTarget.style.background = '#f0f0f0';
-          e.currentTarget.style.color = '#333';
+          e.currentTarget.style.transform = 'scale(1.1)';
         }}
         onMouseOut={(e) => {
-          e.currentTarget.style.background = 'none';
-          e.currentTarget.style.color = '#666';
+          e.currentTarget.style.transform = 'scale(1)';
         }}
+        aria-label="Close notification"
       >
-        <X size={18} />
+        <X size={16} strokeWidth={3} />
       </button>
     </div>
   );

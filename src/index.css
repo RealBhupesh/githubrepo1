@@ -5,15 +5,25 @@
 }
 
 :root {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  line-height: 1.5;
+  /* Teenage Engineering Color Palette */
+  --te-orange: #FF6600;
+  --te-yellow: #FFFF00;
+  --te-black: #000000;
+  --te-white: #FFFFFF;
+  --te-gray: #CCCCCC;
+  --te-light-gray: #F5F5F5;
+  --te-red: #FF0000;
+  --te-green: #00FF00;
+  --te-blue: #0000FF;
+
+  /* Typography */
+  font-family: 'Courier New', 'Courier', monospace;
+  line-height: 1.4;
   font-weight: 400;
 
   font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: none;
   -moz-osx-font-smoothing: grayscale;
 }
 
@@ -22,6 +32,8 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
+  background: var(--te-white);
+  color: var(--te-black);
 }
 
 #root {
@@ -30,40 +42,52 @@ body {
 }
 
 button {
-  font-family: inherit;
+  font-family: 'Courier New', 'Courier', monospace;
   cursor: pointer;
   border: none;
   outline: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 button:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline: 3px solid var(--te-black);
   outline-offset: 2px;
 }
 
+button:active {
+  transform: translate(1px, 1px);
+}
+
 input {
-  font-family: inherit;
+  font-family: 'Courier New', 'Courier', monospace;
 }
 
 input:focus {
-  outline: none;
+  outline: 2px solid var(--te-black);
 }
 
-/* Scrollbar Styles */
+/* Scrollbar Styles - Minimal TE style */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
+  background: var(--te-white);
+  border-left: 1px solid var(--te-black);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
+  background: var(--te-black);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--te-orange);
 }
+
+/* Selection */
+::selection {
+  background: var(--te-orange);
+  color: var(--te-white);
+}
+
