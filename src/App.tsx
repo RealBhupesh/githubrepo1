@@ -10,22 +10,32 @@ import { CountdownTimer } from './components/CountdownTimer';
 import { SettingsPanel } from './components/SettingsPanel';
 import { StatisticsPanel } from './components/StatisticsPanel';
 import { FullscreenButton } from './components/FullscreenButton';
+import { SessionInsights } from './components/SessionInsights';
+import { DistractionJournal } from './components/DistractionJournal';
 import { ToastContainer } from './components/Toast';
 import { useTimer } from './hooks/useTimer';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useFullscreen } from './hooks/useFullscreen';
 import { useToast } from './hooks/useToast';
-import { loadSettings, saveSettings, loadStatistics, saveStatistics } from './utils/storage';
+import {
+  loadSettings,
+  saveSettings,
+  loadStatistics,
+  saveStatistics,
+  loadDistractions,
+  saveDistractions,
+} from './utils/storage';
 import { requestNotificationPermission } from './utils/helpers';
 import { analytics } from './utils/analytics';
 import { THEMES, BACKGROUND_IMAGES } from './utils/constants';
-import type { AppMode, TimerMode, Statistics } from './types';
+import type { AppMode, TimerMode, Statistics, DistractionNote } from './types';
 import './App.css';
 
 function App() {
   const [appMode, setAppMode] = useState<AppMode>('pomodoro');
   const [settings, setSettings] = useState(() => loadSettings());
   const [statistics, setStatistics] = useState(() => loadStatistics());
+  const [distractions, setDistractions] = useState<DistractionNote[]>(() => loadDistractions());
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isStatsOpen, setIsStatsOpen] = useState(false);
   const [showEscHint, setShowEscHint] = useState(false);
@@ -35,31 +45,61 @@ function App() {
 
   const handleSessionComplete = useCallback(
     (mode: TimerMode) => {
-      const newStats: Statistics = { ...statistics };
+      const now = new Date();
+
+      setStatistics((prevStats) => {
+        const lastSessionDate = new Date(prevStats.lastSessionDate);
+        const isNewDay = lastSessionDate.toDateString() !== now.toDateString();
+        const baseStats: Statistics = isNewDay
+          ? { ...prevStats, todayPomodoros: 0 }
+          : { ...prevStats };
+
+        const updatedStats: Statistics = { ...baseStats, lastSessionDate: now.toISOString() };
+
+        if (mode === 'pomodoro') {
+          const lastPomodoro = new Date(prevStats.lastPomodoroDate);
+          const dayDiff = Math.floor(
+            (now.setHours(0, 0, 0, 0) - lastPomodoro.setHours(0, 0, 0, 0)) /
+              (1000 * 60 * 60 * 24)
+          );
+
+          const isFirstPomodoroToday = updatedStats.todayPomodoros === 0;
+          const nextStreak = isFirstPomodoroToday
+            ? dayDiff === 1
+              ? prevStats.currentStreak + 1
+              : 1
+            : updatedStats.currentStreak;
+
+          updatedStats.currentStreak = Math.max(updatedStats.currentStreak, nextStreak);
+          updatedStats.bestStreak = Math.max(updatedStats.bestStreak, nextStreak);
+          updatedStats.totalPomodoros += 1;
+          updatedStats.todayPomodoros += 1;
+          updatedStats.totalTimeInSeconds += settings.timer.pomodoro * 60;
+          updatedStats.lastPomodoroDate = now.toISOString();
+        } else if (mode === 'shortBreak') {
+          updatedStats.totalShortBreaks += 1;
+          updatedStats.totalTimeInSeconds += settings.timer.shortBreak * 60;
+        } else if (mode === 'longBreak') {
+          updatedStats.totalLongBreaks += 1;
+          updatedStats.totalTimeInSeconds += settings.timer.longBreak * 60;
+        }
+
+        saveStatistics(updatedStats);
+        return updatedStats;
+      });
 
       if (mode === 'pomodoro') {
-        newStats.totalPomodoros += 1;
-        newStats.todayPomodoros += 1;
-        newStats.totalTimeInSeconds += settings.timer.pomodoro * 60;
         success('Great work! Pomodoro session completed!', 5000);
         analytics.trackTimerComplete('pomodoro', settings.timer.pomodoro);
       } else if (mode === 'shortBreak') {
-        newStats.totalShortBreaks += 1;
-        newStats.totalTimeInSeconds += settings.timer.shortBreak * 60;
         info('Short break completed! Ready to focus?', 5000);
         analytics.trackTimerComplete('shortBreak', settings.timer.shortBreak);
       } else if (mode === 'longBreak') {
-        newStats.totalLongBreaks += 1;
-        newStats.totalTimeInSeconds += settings.timer.longBreak * 60;
         success('Long break finished! Time to get back to work!', 5000);
         analytics.trackTimerComplete('longBreak', settings.timer.longBreak);
       }
-
-      newStats.lastSessionDate = new Date().toISOString();
-      setStatistics(newStats);
-      saveStatistics(newStats);
     },
-    [statistics, settings.timer, success, info]
+    [settings.timer, success, info]
   );
 
   const timer = useTimer({
@@ -87,6 +127,11 @@ function App() {
   useEffect(() => {
     saveSettings(settings);
   }, [settings]);
+
+  // Save distractions when they change
+  useEffect(() => {
+    saveDistractions(distractions);
+  }, [distractions]);
 
   // Request notification permission
   useEffect(() => {
@@ -152,6 +197,45 @@ function App() {
     [settings]
   );
 
+  const getNextMode = (): TimerMode => {
+    if (timer.mode === 'pomodoro') {
+      const nextCount = timer.completedPomodoros + 1;
+      return nextCount % settings.timer.longBreakInterval === 0 ? 'longBreak' : 'shortBreak';
+    }
+    return 'pomodoro';
+  };
+
+  const nextMode = getNextMode();
+  const nextDuration =
+    nextMode === 'pomodoro'
+      ? settings.timer.pomodoro * 60
+      : nextMode === 'shortBreak'
+        ? settings.timer.shortBreak * 60
+        : settings.timer.longBreak * 60;
+  const autoStartNext =
+    timer.mode === 'pomodoro' ? settings.timer.autoStartBreaks : settings.timer.autoStartPomodoros;
+
+  const handleAddDistraction = (text: string) => {
+    const note: DistractionNote = {
+      id: crypto.randomUUID?.() ?? `${Date.now()}`,
+      text,
+      timestamp: new Date().toISOString(),
+      resolved: false,
+    };
+
+    setDistractions((prev) => [note, ...prev]);
+  };
+
+  const handleToggleDistraction = (id: string) => {
+    setDistractions((prev) =>
+      prev.map((entry) => (entry.id === id ? { ...entry, resolved: !entry.resolved } : entry))
+    );
+  };
+
+  const handleRemoveDistraction = (id: string) => {
+    setDistractions((prev) => prev.filter((entry) => entry.id !== id));
+  };
+
   return (
     <div className="app" style={backgroundStyle}>
       <div
@@ -212,6 +296,28 @@ function App() {
                   Session {timer.completedPomodoros + 1}
                 </div>
               )}
+
+              <SessionInsights
+                goal={settings.timer.dailyGoal}
+                todayPomodoros={statistics.todayPomodoros}
+                currentStreak={statistics.currentStreak}
+                bestStreak={statistics.bestStreak}
+                nextMode={nextMode}
+                nextDuration={nextDuration}
+                currentMode={timer.mode}
+                secondsLeft={timer.secondsLeft}
+                status={timer.status}
+                completedPomodoros={timer.completedPomodoros}
+                longBreakInterval={settings.timer.longBreakInterval}
+                autoStartNext={autoStartNext}
+              />
+
+              <DistractionJournal
+                entries={distractions}
+                onAdd={handleAddDistraction}
+                onToggleResolved={handleToggleDistraction}
+                onRemove={handleRemoveDistraction}
+              />
             </>
           )}
 
@@ -261,6 +367,7 @@ function App() {
           isOpen={isStatsOpen}
           onClose={() => setIsStatsOpen(false)}
           statistics={statistics}
+          dailyGoal={settings.timer.dailyGoal}
         />
       </div>
     </div>

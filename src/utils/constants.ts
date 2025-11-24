@@ -10,6 +10,7 @@ export const DEFAULT_TIMER_SETTINGS: TimerSettings = {
   soundEnabled: true,
   notificationsEnabled: true,
   volume: 0.5,
+  dailyGoal: 8,
 };
 
 export const THEMES: Theme[] = [

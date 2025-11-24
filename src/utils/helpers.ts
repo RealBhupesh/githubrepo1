@@ -67,3 +67,11 @@ export const formatDuration = (seconds: number): string => {
   }
   return `${minutes}m`;
 };
+
+export const formatClockTime = (secondsFromNow: number, isoTimestamp?: string): string => {
+  const target = isoTimestamp ? new Date(isoTimestamp) : new Date(Date.now() + secondsFromNow * 1000);
+  return target.toLocaleTimeString([], {
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+};

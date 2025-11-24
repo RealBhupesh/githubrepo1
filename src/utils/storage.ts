@@ -1,9 +1,10 @@
-import type { AppSettings, Statistics } from '../types';
+import type { AppSettings, DistractionNote, Statistics } from '../types';
 import { DEFAULT_TIMER_SETTINGS, THEMES } from './constants';
 
 const STORAGE_KEYS = {
   SETTINGS: 'pomodoro_settings',
   STATISTICS: 'pomodoro_statistics',
+  DISTRACTIONS: 'pomodoro_distractions',
 };
 
 export const loadSettings = (): AppSettings => {
@@ -42,15 +43,33 @@ export const loadStatistics = (): Statistics => {
   try {
     const stored = localStorage.getItem(STORAGE_KEYS.STATISTICS);
     if (stored) {
-      const stats = JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      const stats: Statistics = {
+        totalPomodoros: 0,
+        totalShortBreaks: 0,
+        totalLongBreaks: 0,
+        totalTimeInSeconds: 0,
+        todayPomodoros: 0,
+        lastSessionDate: new Date().toISOString(),
+        lastPomodoroDate: new Date().toISOString(),
+        currentStreak: 0,
+        bestStreak: 0,
+        ...parsed,
+      };
 
       // Reset daily stats if it's a new day
-      const lastDate = new Date(stats.lastSessionDate);
+      const lastPomodoro = new Date(stats.lastPomodoroDate || stats.lastSessionDate);
       const today = new Date();
-      if (lastDate.toDateString() !== today.toDateString()) {
+      const diffDays = Math.floor(
+        (today.setHours(0, 0, 0, 0) - lastPomodoro.setHours(0, 0, 0, 0)) /
+          (1000 * 60 * 60 * 24)
+      );
+
+      if (diffDays >= 1) {
         return {
           ...stats,
           todayPomodoros: 0,
+          currentStreak: diffDays === 1 ? stats.currentStreak : 0,
           lastSessionDate: today.toISOString(),
         };
       }
@@ -68,6 +87,9 @@ export const loadStatistics = (): Statistics => {
     totalTimeInSeconds: 0,
     todayPomodoros: 0,
     lastSessionDate: new Date().toISOString(),
+    lastPomodoroDate: new Date().toISOString(),
+    currentStreak: 0,
+    bestStreak: 0,
   };
 };
 
@@ -76,5 +98,34 @@ export const saveStatistics = (statistics: Statistics): void => {
     localStorage.setItem(STORAGE_KEYS.STATISTICS, JSON.stringify(statistics));
   } catch (error) {
     console.error('Error saving statistics:', error);
+  }
+};
+
+export const loadDistractions = (): DistractionNote[] => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.DISTRACTIONS);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        return parsed.map((item) => ({
+          id: item.id ?? crypto.randomUUID?.() ?? String(Date.now()),
+          text: item.text ?? '',
+          timestamp: item.timestamp ?? new Date().toISOString(),
+          resolved: Boolean(item.resolved),
+        }));
+      }
+    }
+  } catch (error) {
+    console.error('Error loading distractions:', error);
+  }
+
+  return [];
+};
+
+export const saveDistractions = (distractions: DistractionNote[]): void => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.DISTRACTIONS, JSON.stringify(distractions));
+  } catch (error) {
+    console.error('Error saving distractions:', error);
   }
 };
