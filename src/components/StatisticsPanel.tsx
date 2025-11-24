@@ -1,4 +1,4 @@
-import { X, Trophy, Clock, Coffee, TrendingUp } from 'lucide-react';
+import { X, Trophy, Clock, Coffee, TrendingUp, Flame, Target } from 'lucide-react';
 import type { Statistics } from '../types';
 import { formatDuration } from '../utils/helpers';
 
@@ -6,10 +6,13 @@ interface StatisticsPanelProps {
   isOpen: boolean;
   onClose: () => void;
   statistics: Statistics;
+  dailyGoal: number;
 }
 
-export const StatisticsPanel = ({ isOpen, onClose, statistics }: StatisticsPanelProps) => {
+export const StatisticsPanel = ({ isOpen, onClose, statistics, dailyGoal }: StatisticsPanelProps) => {
   if (!isOpen) return null;
+
+  const goalProgress = dailyGoal > 0 ? Math.round((statistics.todayPomodoros / dailyGoal) * 100) : 0;
 
   return (
     <div className="settings-overlay" onClick={onClose}>
@@ -29,6 +32,14 @@ export const StatisticsPanel = ({ isOpen, onClose, statistics }: StatisticsPanel
               </div>
               <div className="stat-value">{statistics.todayPomodoros}</div>
               <div className="stat-label">Today's Sessions</div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-icon">
+                <Target />
+              </div>
+              <div className="stat-value">{goalProgress}%</div>
+              <div className="stat-label">Daily Progress ({statistics.todayPomodoros}/{dailyGoal})</div>
             </div>
 
             <div className="stat-card">
@@ -55,6 +66,14 @@ export const StatisticsPanel = ({ isOpen, onClose, statistics }: StatisticsPanel
               </div>
               <div className="stat-value">{formatDuration(statistics.totalTimeInSeconds)}</div>
               <div className="stat-label">Total Focus Time</div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-icon">
+                <Flame />
+              </div>
+              <div className="stat-value">{statistics.currentStreak}d</div>
+              <div className="stat-label">Current Streak (best {statistics.bestStreak}d)</div>
             </div>
           </div>
 

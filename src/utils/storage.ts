@@ -42,15 +42,33 @@ export const loadStatistics = (): Statistics => {
   try {
     const stored = localStorage.getItem(STORAGE_KEYS.STATISTICS);
     if (stored) {
-      const stats = JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      const stats: Statistics = {
+        totalPomodoros: 0,
+        totalShortBreaks: 0,
+        totalLongBreaks: 0,
+        totalTimeInSeconds: 0,
+        todayPomodoros: 0,
+        lastSessionDate: new Date().toISOString(),
+        lastPomodoroDate: new Date().toISOString(),
+        currentStreak: 0,
+        bestStreak: 0,
+        ...parsed,
+      };
 
       // Reset daily stats if it's a new day
-      const lastDate = new Date(stats.lastSessionDate);
+      const lastPomodoro = new Date(stats.lastPomodoroDate || stats.lastSessionDate);
       const today = new Date();
-      if (lastDate.toDateString() !== today.toDateString()) {
+      const diffDays = Math.floor(
+        (today.setHours(0, 0, 0, 0) - lastPomodoro.setHours(0, 0, 0, 0)) /
+          (1000 * 60 * 60 * 24)
+      );
+
+      if (diffDays >= 1) {
         return {
           ...stats,
           todayPomodoros: 0,
+          currentStreak: diffDays === 1 ? stats.currentStreak : 0,
           lastSessionDate: today.toISOString(),
         };
       }
@@ -68,6 +86,9 @@ export const loadStatistics = (): Statistics => {
     totalTimeInSeconds: 0,
     todayPomodoros: 0,
     lastSessionDate: new Date().toISOString(),
+    lastPomodoroDate: new Date().toISOString(),
+    currentStreak: 0,
+    bestStreak: 0,
   };
 };
 
