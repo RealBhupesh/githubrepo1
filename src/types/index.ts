@@ -86,3 +86,10 @@ export interface AppSettings {
   notificationsEnabled: boolean;
   volume: number;
 }
+
+export interface DistractionNote {
+  id: string;
+  text: string;
+  timestamp: string;
+  resolved: boolean;
+}

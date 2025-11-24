@@ -11,22 +11,31 @@ import { SettingsPanel } from './components/SettingsPanel';
 import { StatisticsPanel } from './components/StatisticsPanel';
 import { FullscreenButton } from './components/FullscreenButton';
 import { SessionInsights } from './components/SessionInsights';
+import { DistractionJournal } from './components/DistractionJournal';
 import { ToastContainer } from './components/Toast';
 import { useTimer } from './hooks/useTimer';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useFullscreen } from './hooks/useFullscreen';
 import { useToast } from './hooks/useToast';
-import { loadSettings, saveSettings, loadStatistics, saveStatistics } from './utils/storage';
+import {
+  loadSettings,
+  saveSettings,
+  loadStatistics,
+  saveStatistics,
+  loadDistractions,
+  saveDistractions,
+} from './utils/storage';
 import { requestNotificationPermission } from './utils/helpers';
 import { analytics } from './utils/analytics';
 import { THEMES, BACKGROUND_IMAGES } from './utils/constants';
-import type { AppMode, TimerMode, Statistics } from './types';
+import type { AppMode, TimerMode, Statistics, DistractionNote } from './types';
 import './App.css';
 
 function App() {
   const [appMode, setAppMode] = useState<AppMode>('pomodoro');
   const [settings, setSettings] = useState(() => loadSettings());
   const [statistics, setStatistics] = useState(() => loadStatistics());
+  const [distractions, setDistractions] = useState<DistractionNote[]>(() => loadDistractions());
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isStatsOpen, setIsStatsOpen] = useState(false);
   const [showEscHint, setShowEscHint] = useState(false);
@@ -118,6 +127,37 @@ function App() {
   useEffect(() => {
     saveSettings(settings);
   }, [settings]);
+
+  // Save distractions when they change
+  useEffect(() => {
+    saveDistractions(distractions);
+  }, [distractions]);
+
+  // Keep the document title in sync with the current time
+  useEffect(() => {
+    const updateTitle = () => {
+      const now = new Date();
+      const formattedTime = now.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const statusLabel =
+        timer.status === 'running'
+          ? timer.mode === 'pomodoro'
+            ? 'Focusing'
+            : timer.mode === 'shortBreak'
+              ? 'Short break'
+              : 'Long break'
+          : 'Timer paused';
+
+      document.title = `${formattedTime} • ${statusLabel}`;
+    };
+
+    updateTitle();
+    const intervalId = window.setInterval(updateTitle, 1000);
+    return () => window.clearInterval(intervalId);
+  }, [timer.mode, timer.status]);
 
   // Request notification permission
   useEffect(() => {

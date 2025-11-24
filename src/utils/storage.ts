@@ -1,9 +1,10 @@
-import type { AppSettings, Statistics } from '../types';
+import type { AppSettings, DistractionNote, Statistics } from '../types';
 import { DEFAULT_TIMER_SETTINGS, THEMES } from './constants';
 
 const STORAGE_KEYS = {
   SETTINGS: 'pomodoro_settings',
   STATISTICS: 'pomodoro_statistics',
+  DISTRACTIONS: 'pomodoro_distractions',
 };
 
 export const loadSettings = (): AppSettings => {
@@ -97,5 +98,34 @@ export const saveStatistics = (statistics: Statistics): void => {
     localStorage.setItem(STORAGE_KEYS.STATISTICS, JSON.stringify(statistics));
   } catch (error) {
     console.error('Error saving statistics:', error);
+  }
+};
+
+export const loadDistractions = (): DistractionNote[] => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.DISTRACTIONS);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        return parsed.map((item) => ({
+          id: item.id ?? crypto.randomUUID?.() ?? String(Date.now()),
+          text: item.text ?? '',
+          timestamp: item.timestamp ?? new Date().toISOString(),
+          resolved: Boolean(item.resolved),
+        }));
+      }
+    }
+  } catch (error) {
+    console.error('Error loading distractions:', error);
+  }
+
+  return [];
+};
+
+export const saveDistractions = (distractions: DistractionNote[]): void => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.DISTRACTIONS, JSON.stringify(distractions));
+  } catch (error) {
+    console.error('Error saving distractions:', error);
   }
 };
