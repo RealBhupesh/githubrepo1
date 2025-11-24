@@ -241,27 +241,6 @@ function App() {
   const autoStartNext =
     timer.mode === 'pomodoro' ? settings.timer.autoStartBreaks : settings.timer.autoStartPomodoros;
 
-  const handleAddDistraction = (text: string) => {
-    const note: DistractionNote = {
-      id: crypto.randomUUID?.() ?? `${Date.now()}`,
-      text,
-      timestamp: new Date().toISOString(),
-      resolved: false,
-    };
-
-    setDistractions((prev) => [note, ...prev]);
-  };
-
-  const handleToggleDistraction = (id: string) => {
-    setDistractions((prev) =>
-      prev.map((entry) => (entry.id === id ? { ...entry, resolved: !entry.resolved } : entry))
-    );
-  };
-
-  const handleRemoveDistraction = (id: string) => {
-    setDistractions((prev) => prev.filter((entry) => entry.id !== id));
-  };
-
   return (
     <div className="app" style={backgroundStyle}>
       <div
@@ -336,13 +315,6 @@ function App() {
                 completedPomodoros={timer.completedPomodoros}
                 longBreakInterval={settings.timer.longBreakInterval}
                 autoStartNext={autoStartNext}
-              />
-
-              <DistractionJournal
-                entries={distractions}
-                onAdd={handleAddDistraction}
-                onToggleResolved={handleToggleDistraction}
-                onRemove={handleRemoveDistraction}
               />
             </>
           )}
