@@ -133,6 +133,32 @@ function App() {
     saveDistractions(distractions);
   }, [distractions]);
 
+  // Keep the document title in sync with the current time
+  useEffect(() => {
+    const updateTitle = () => {
+      const now = new Date();
+      const formattedTime = now.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const statusLabel =
+        timer.status === 'running'
+          ? timer.mode === 'pomodoro'
+            ? 'Focusing'
+            : timer.mode === 'shortBreak'
+              ? 'Short break'
+              : 'Long break'
+          : 'Timer paused';
+
+      document.title = `${formattedTime} • ${statusLabel}`;
+    };
+
+    updateTitle();
+    const intervalId = window.setInterval(updateTitle, 1000);
+    return () => window.clearInterval(intervalId);
+  }, [timer.mode, timer.status]);
+
   // Request notification permission
   useEffect(() => {
     if (settings.notificationsEnabled) {
