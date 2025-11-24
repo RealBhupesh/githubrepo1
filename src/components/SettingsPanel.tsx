@@ -94,6 +94,16 @@ export const SettingsPanel = ({
                   }
                 />
               </label>
+              <label>
+                <span>Daily Goal (pomodoros)</span>
+                <input
+                  type="number"
+                  min="1"
+                  max="24"
+                  value={timerSettings.dailyGoal}
+                  onChange={(e) => handleTimerChange('dailyGoal', parseInt(e.target.value) || 8)}
+                />
+              </label>
             </div>
           </section>
 

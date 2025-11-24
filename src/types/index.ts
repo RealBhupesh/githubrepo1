@@ -16,6 +16,7 @@ export interface TimerSettings {
   soundEnabled: boolean;
   notificationsEnabled: boolean;
   volume: number; // 0-1
+  dailyGoal: number; // target pomodoros per day
 }
 
 // Stopwatch lap interface
@@ -71,6 +72,9 @@ export interface Statistics {
   totalTimeInSeconds: number;
   todayPomodoros: number;
   lastSessionDate: string;
+  lastPomodoroDate: string;
+  currentStreak: number;
+  bestStreak: number;
 }
 
 export interface AppSettings {

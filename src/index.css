@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap');
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -5,25 +7,26 @@
 }
 
 :root {
-  /* Teenage Engineering Color Palette */
-  --te-orange: #FF6600;
-  --te-yellow: #FFFF00;
-  --te-black: #000000;
-  --te-white: #FFFFFF;
-  --te-gray: #CCCCCC;
-  --te-light-gray: #F5F5F5;
-  --te-red: #FF0000;
-  --te-green: #00FF00;
-  --te-blue: #0000FF;
+  /* Refined palette */
+  --te-orange: #7c3aed;
+  --te-yellow: #f5f3ff;
+  --te-black: #0f172a;
+  --te-white: #f8fafc;
+  --te-gray: #94a3b8;
+  --te-light-gray: #e2e8f0;
+  --te-red: #ef4444;
+  --te-green: #22c55e;
+  --te-blue: #38bdf8;
 
   /* Typography */
-  font-family: 'Courier New', 'Courier', monospace;
-  line-height: 1.4;
+  font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+  line-height: 1.5;
   font-weight: 400;
 
   font-synthesis: none;
-  text-rendering: optimizeSpeed;
-  -webkit-font-smoothing: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
@@ -42,7 +45,8 @@ body {
 }
 
 button {
-  font-family: 'Courier New', 'Courier', monospace;
+  font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
   cursor: pointer;
   border: none;
   outline: none;
@@ -56,38 +60,40 @@ button:focus-visible {
 }
 
 button:active {
-  transform: translate(1px, 1px);
+  transform: translate(0, 1px);
 }
 
 input {
-  font-family: 'Courier New', 'Courier', monospace;
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
 }
 
 input:focus {
   outline: 2px solid var(--te-black);
 }
 
-/* Scrollbar Styles - Minimal TE style */
+/* Scrollbar Styles */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--te-white);
-  border-left: 1px solid var(--te-black);
+  background: #e2e8f0;
+  border-left: 1px solid #cbd5e1;
+  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--te-black);
+  background: linear-gradient(180deg, #7c3aed, #6366f1);
+  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--te-orange);
+  background: linear-gradient(180deg, #6d28d9, #4f46e5);
 }
 
 /* Selection */
 ::selection {
-  background: var(--te-orange);
-  color: var(--te-white);
+  background: rgba(124, 58, 237, 0.2);
+  color: inherit;
 }
 
